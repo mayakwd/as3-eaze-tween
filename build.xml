@@ -1,0 +1,35 @@
+<project name="EazeTweenDoc" default="build">
+
+	<property environment="env" />
+	<fail unless="env.FLEX_HOME" message="FLEX_HOME needs to be defined as an environment variable or in the Ant build." />
+	<property name="FLEX_HOME" location="${env.FLEX_HOME}" />
+	
+	<property name="OUTPUT" location="lib/EazeTween.swc"/>
+
+	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar"/>
+
+	<target name="build">
+
+		<mkdir dir="lib" />
+
+		<compc output="${OUTPUT}">
+			<sp path-element="src" />
+			<include-sources dir="src" includes="*"  />
+		</compc>
+
+		<asdoc output="lib/tempDoc" lenient="true" failonerror="true" keep-xml="true" skip-xsl="true" fork="true">
+			<sp path-element="src"/>
+			<doc-sources path-element="src" />
+		</asdoc>
+
+		<zip destfile="${OUTPUT}" update="true">
+			<zipfileset dir="lib/tempDoc/tempdita" prefix="docs">
+				<include name="*.*"/>
+				<exclude name="ASDoc_Config.xml"/>
+				<exclude name="overviews.xml"/>
+			</zipfileset>
+		</zip>
+
+		<delete dir="lib/tempDoc" />
+	</target>
+</project>
