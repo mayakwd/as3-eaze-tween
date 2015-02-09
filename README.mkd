@@ -35,9 +35,10 @@ eaze(target).to(duration, { width:dw }, false /*don't overwrite existing tweens*
 ```
 
 Multi-target tweening:
-```
+```actionscript
 eaze([circle, rectangle]).to(duration, {x: dx, y:dy });
 eaze(new <Shape>[circle, rectangle]).to(duration, {x: dx, y:dy });
+```
 
 Original, completion-friendly, event system:
 ```actionscript
