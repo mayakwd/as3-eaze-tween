@@ -4,11 +4,11 @@
 	Website: http://code.google.com/p/eaze-tween/
 	License: http://www.opensource.org/licenses/mit-license.php
 */
-package aze.motion
-{
+package aze.motion {
 	import aze.motion.easing.Linear;
 	import aze.motion.easing.Quadratic;
 	import aze.motion.specials.EazeSpecial;
+
 	import flash.display.Shape;
 	import flash.events.Event;
 	import flash.filters.ColorMatrixFilter;
@@ -23,7 +23,7 @@ package aze.motion
 	final public class EazeTween
 	{
 		//--- STATIC ----------------------------------------------------------
-		
+
 		/** Defines default easing method to use when no ease is specified */
 		static public var defaultEasing:Function = Quadratic.easeOut;
 		static public var defaultDuration:Object = { slow:1, normal:0.4, fast:0.2 };
@@ -39,7 +39,7 @@ package aze.motion
 		static private var pauseTime:Number;
 		static private var head:EazeTween;
 		static private var tweenCount:int = 0;
-		
+
 		/**
 		 * Stop immediately all running tweens
 		 */
@@ -149,13 +149,22 @@ package aze.motion
 					var p:EazeProperty = t.properties;
 					while (p)
 					{
-						target[p.name] = p.start + p.delta * ke;
+						p.target[p.name] = p.start + p.delta * ke;
 						p = p.next;
 					}
 					
 					if (t.slowTween)
 					{
-						if (t.autoVisible) target.visible = target.alpha > 0.001;
+						if (t.autoVisible)
+						if (target is Array || isVector(target)) 
+						{
+							for each (var subTarget : * in target) 
+							{
+								subTarget.visible = subTarget.alpha > 0.001;
+							}
+						} else {
+							target.visible = target.alpha > 0.001;
+						}
 						if (t.specials)
 						{
 							var s:EazeSpecial = t.specials;
@@ -237,7 +246,7 @@ package aze.motion
 		private var rnext:EazeTween;
 		private var isDead:Boolean;
 		
-		private var target:Object;
+		private var target:*;
 		private var reversed:Boolean;
 		private var overwrite:Boolean;
 		private var autoStart:Boolean;
@@ -265,10 +274,10 @@ package aze.motion
 		
 		/**
 		 * Creates a tween instance
-		 * @param	target		Target object
+		 * @param	target		Target object. Target can be single object or Array/Vector.
 		 * @param	autoStart	Start tween immediately after .to / .from are called
 		 */
-		public function EazeTween(target:Object, autoStart:Boolean = true)
+		public function EazeTween(target:*, autoStart:Boolean = true)
 		{
 			if (!target) throw new ArgumentError("EazeTween: target can not be null");
 			
@@ -285,40 +294,47 @@ package aze.motion
 			this.duration = duration;
 			
 			// properties
-			if (newState)
-			for (var name:String in newState)
-			{
-				var value:* = newState[name];
-				if (name in specialProperties)
-				{
-					if (name == "alpha") { autoVisible = true; slowTween = true; }
-					else if (name == "alphaVisible") { name = "alpha"; autoVisible = false; }
-					else if (!(name in target))
-					{
-						if (name == "scale")
-						{
-							configure(duration, { scaleX:value, scaleY:value }, reversed);
-							continue;
-						}
-						else
-						{
-							specials = new specialProperties[name](target, name, value, specials);
-							slowTween = true;
-							continue;
-						}
-					}
+			if (this.target is Array || isVector(this.target)) {
+				for each (var target : * in this.target) {
+					configureTarget(target, newState, duration, reversed);
 				}
-				if (value is Array && target[name] is Number)
-				{
-					if ("__bezier" in specialProperties)
-					{
-						specials = new specialProperties["__bezier"](target, name, value, specials);
-						slowTween = true;
-					}
-					continue;
-				}
-				properties = new EazeProperty(name, value, properties);
+			} else {
+				configureTarget(target, newState, duration, reversed);
 			}
+
+		}
+		
+		private function configureTarget(target : *, newState : Object, duration : *, reversed : Boolean) : void {
+			if (newState)
+				for (var name : String in newState) {
+					var value : * = newState[name];
+					if (name in specialProperties) {
+						if (name == "alpha") {
+							autoVisible = true;
+							slowTween = true;
+						} else if (name == "alphaVisible") {
+							name = "alpha";
+							autoVisible = false;
+						} else if (!(name in target)) {
+							if (name == "scale") {
+								configure(duration, {scaleX:value, scaleY:value}, reversed);
+								continue;
+							} else {
+								specials = new specialProperties[name](target, name, value, specials);
+								slowTween = true;
+								continue;
+							}
+						}
+					}
+					if (value is Array && target[name] is Number) {
+						if ("__bezier" in specialProperties) {
+							specials = new specialProperties["__bezier"](target, name, value, specials);
+							slowTween = true;
+						}
+						continue;
+					}
+					properties = new EazeProperty(target, name, value, properties);
+				}
 		}
 		
 		/** 
@@ -337,7 +353,16 @@ package aze.motion
 			
 			// set values
 			if (reversed || _duration == 0) update(startTime);
-			if (autoVisible && _duration > 0) target.visible = true;
+			if (autoVisible && _duration > 0) 
+			{
+				if (target is Array || isVector(target)) {
+					for each (var subTarget : *  in target) {
+						subTarget.visible = true;
+					}
+				} else {
+					target.visible = true;
+				}
+			}
 			_started = true;
 			attach(overwrite);
 		}
@@ -349,7 +374,7 @@ package aze.motion
 			
 			// configure properties
 			var p:EazeProperty = properties;
-			while (p) { p.init(target, reversed); p = p.next; }
+			while (p) { p.init(reversed); p = p.next; }
 			
 			var s:EazeSpecial = specials;
 			while (s) { s.init(reversed); s = s.next; }
@@ -741,9 +766,9 @@ package aze.motion
 		
 		/**
 		 * Chain another tween after current tween
-		 * @param	otherTarget		Chain another target after the current tween ends
+		 * @param	otherTarget		Chain another target after the current tween ends. Target can be single object or Array/Vector.
 		 */
-		public function chain(target:Object = null):EazeTween
+		public function chain(target:* = null):EazeTween
 		{
 			var tween:EazeTween = new EazeTween(target || this.target, false);
 			if (!_chain) _chain = [];
@@ -759,26 +784,30 @@ package aze.motion
 	}
 
 }
+import aze.motion.EazeTween;
 
+import flash.utils.getQualifiedClassName;
 /**
  * Tweened propertie infos (chained list)
  */
 final class EazeProperty
 {
+	public var target:*;
 	public var name:String;
 	public var start:Number;
 	public var end:Number;
 	public var delta:Number;
 	public var next:EazeProperty;
 	
-	function EazeProperty(name:String, end:Number, next:EazeProperty)
+	function EazeProperty(target : *, name:String, end:Number, next:EazeProperty)
 	{
+		this.target = target;
 		this.name = name;
 		this.end = end;
 		this.next = next;
 	}
 	
-	public function init(target:Object, reversed:Boolean):void
+	public function init(reversed:Boolean):void
 	{
 		if (reversed)
 		{
@@ -798,7 +827,6 @@ final class EazeProperty
 	}
 }
 
-import aze.motion.EazeTween;
 
 /**
  * Information to honor tween completion: complete event, chaining.
@@ -834,4 +862,10 @@ final class CompleteData
 			chain = null;
 		}
 	}
+}
+
+
+const VECTOR : String = "__AS3__.vec::Vector";
+function isVector(value : *) : Boolean {
+	return getQualifiedClassName(value).indexOf(VECTOR) == 0;
 }

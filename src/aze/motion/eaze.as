@@ -14,9 +14,9 @@ package aze.motion {
 	import aze.motion.specials.PropertyTint;
 	import aze.motion.specials.PropertyVolume;
 	/**
-	 * Select a target for tweening
+	 * Select a target for tweening. Target can be single object or Array/Vector. 
 	 */
-	public function eaze(target : Object) : EazeTween {
+	public function eaze(target : *) : EazeTween {
 		return new EazeTween(target);
 	}
 	
