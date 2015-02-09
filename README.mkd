@@ -3,6 +3,15 @@ as3-eaze-tween
 
 EazeTween based on [eaze-tween written by philippe.elsass](https://code.google.com/p/eaze-tween/)
 
+
+Changelog
+---------------------
+Feb 9, 2015
+- Added multi-target support
+
+Jan 20, 2015
+- repeat() method added
+
 Eaze was designed to:
 ---------------------
 
@@ -24,6 +33,11 @@ eaze(target).play("label"); // see timeline tweening below
 
 eaze(target).to(duration, { width:dw }, false /*don't overwrite existing tweens*/);
 ```
+
+Multi-target tweening:
+```
+eaze([circle, rectangle]).to(duration, {x: dx, y:dy });
+eaze(new <Shape>[circle, rectangle]).to(duration, {x: dx, y:dy });
 
 Original, completion-friendly, event system:
 ```actionscript
