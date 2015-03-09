@@ -299,7 +299,7 @@ package aze.motion {
 					configureTarget(target, newState, duration, reversed);
 				}
 			} else {
-				configureTarget(target, newState, duration, reversed);
+				configureTarget(this.target, newState, duration, reversed);
 			}
 
 		}
