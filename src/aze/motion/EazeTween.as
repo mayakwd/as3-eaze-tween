@@ -163,7 +163,7 @@ package aze.motion {
 					if (t.slowTween)
 					{
 						if (t.autoVisible)
-						if (target is Array || isVector(target)) 
+						if (t.targetIsVectorOrArray)	
 						{
 							for each (var subTarget : * in target) 
 							{
@@ -252,6 +252,7 @@ package aze.motion {
 		private var next:EazeTween;
 		private var rnext:EazeTween;
 		private var isDead:Boolean;
+		private var targetIsVectorOrArray:Boolean;
 		
 		private var target:*;
 		private var reversed:Boolean;
@@ -290,6 +291,7 @@ package aze.motion {
 			
 			this.target = target;
 			this.autoStart = autoStart;
+			this.targetIsVectorOrArray = (this.target is Array || isVector(this.target));
 			_ease = defaultEasing;
 		}
 		
@@ -301,7 +303,7 @@ package aze.motion {
 			this.duration = duration;
 			
 			// properties
-			if (this.target is Array || isVector(this.target)) {
+			if (this.targetIsVectorOrArray) {
 				for each (var target : * in this.target) {
 					configureTarget(target, newState, duration, reversed);
 				}
