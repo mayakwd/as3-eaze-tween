@@ -33,13 +33,13 @@ package aze.motion {
 		/** Defines default easing method to use when no ease is specified */
 		static public var defaultEasing:Function = Quadratic.easeOut;
 		static public var defaultDuration:Object = { slow:1, normal:0.4, fast:0.2 };
+		static public var useMilliseconds:Boolean = false;
 		
 		/** Registered plugins */ 
 		static public const specialProperties:Dictionary = new Dictionary();
 		specialProperties.alpha = true;
 		specialProperties.alphaVisible = true;
 		specialProperties.scale = true;
-		specialProperties.useMilliseconds = false;
 		
 		static private const running:Dictionary = new Dictionary();
 		static private const ticker:Shape = createTicker();
@@ -357,7 +357,7 @@ package aze.motion {
 			
 			// add to main tween chain
 			startTime = getTimer() + timeOffset;
-			_duration = (isNaN(duration) ? smartDuration(String(duration)) : Number(duration)) *(specialProperties.useMilliseconds ? 1 : 1000);
+			_duration = (isNaN(duration) ? smartDuration(String(duration)) : Number(duration)) *(useMilliseconds ? 1 : 1000);
 			endTime = startTime + _duration;
 			
 			// set values
