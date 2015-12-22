@@ -39,6 +39,7 @@ package aze.motion {
 		specialProperties.alpha = true;
 		specialProperties.alphaVisible = true;
 		specialProperties.scale = true;
+		specialProperties.useMilliseconds = false;
 		
 		static private const running:Dictionary = new Dictionary();
 		static private const ticker:Shape = createTicker();
@@ -354,7 +355,7 @@ package aze.motion {
 			
 			// add to main tween chain
 			startTime = getTimer() + timeOffset;
-			_duration = (isNaN(duration) ? smartDuration(String(duration)) : Number(duration)) * 1000;
+			_duration = (isNaN(duration) ? smartDuration(String(duration)) : Number(duration)) *(specialProperties.useMilliseconds ? 1 : 1000);
 			endTime = startTime + _duration;
 			
 			// set values
