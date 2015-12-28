@@ -33,6 +33,7 @@ package aze.motion {
 		/** Defines default easing method to use when no ease is specified */
 		static public var defaultEasing:Function = Quadratic.easeOut;
 		static public var defaultDuration:Object = { slow:1, normal:0.4, fast:0.2 };
+		static public var useMilliseconds:Boolean = false;
 		
 		/** Registered plugins */ 
 		static public const specialProperties:Dictionary = new Dictionary();
@@ -162,7 +163,7 @@ package aze.motion {
 					if (t.slowTween)
 					{
 						if (t.autoVisible)
-						if (target is Array || isVector(target)) 
+						if (t.targetIsVectorOrArray)	
 						{
 							for each (var subTarget : * in target) 
 							{
@@ -251,6 +252,7 @@ package aze.motion {
 		private var next:EazeTween;
 		private var rnext:EazeTween;
 		private var isDead:Boolean;
+		private var targetIsVectorOrArray:Boolean;
 		
 		private var target:*;
 		private var reversed:Boolean;
@@ -289,6 +291,7 @@ package aze.motion {
 			
 			this.target = target;
 			this.autoStart = autoStart;
+			this.targetIsVectorOrArray = (this.target is Array || isVector(this.target));
 			_ease = defaultEasing;
 		}
 		
@@ -300,7 +303,7 @@ package aze.motion {
 			this.duration = duration;
 			
 			// properties
-			if (this.target is Array || isVector(this.target)) {
+			if (this.targetIsVectorOrArray) {
 				for each (var target : * in this.target) {
 					configureTarget(target, newState, duration, reversed);
 				}
@@ -354,7 +357,7 @@ package aze.motion {
 			
 			// add to main tween chain
 			startTime = getTimer() + timeOffset;
-			_duration = (isNaN(duration) ? smartDuration(String(duration)) : Number(duration)) * 1000;
+			_duration = (isNaN(duration) ? smartDuration(String(duration)) : Number(duration)) *(useMilliseconds ? 1 : 1000);
 			endTime = startTime + _duration;
 			
 			// set values
