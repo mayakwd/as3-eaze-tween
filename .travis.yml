@@ -8,7 +8,9 @@ language: objective-c
 env:
 - TERM=dumb
 before_script:
-- brew install ant gradle >brew-install.log
+- brew update > /dev/null
+- brew tap homebrew/binary
+- brew install ant pandoc > /dev/null
 - brew install caskroom/cask/brew-cask
 - brew cask install flash-player-debugger
 - export FLASHPLAYER_DEBUGGER="$HOME/Applications/Flash Player Debugger.app/Contents/MacOS/Flash Player Debugger"
