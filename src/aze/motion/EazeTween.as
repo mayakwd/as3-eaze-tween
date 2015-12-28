@@ -8,7 +8,6 @@ package aze.motion {
 	import aze.motion.easing.Linear;
 	import aze.motion.easing.Quadratic;
 	import aze.motion.specials.EazeSpecial;
-
 	import flash.display.Shape;
 	import flash.events.Event;
 	import flash.filters.ColorMatrixFilter;
@@ -22,6 +21,13 @@ package aze.motion {
 	 */
 	final public class EazeTween
 	{
+		private static function isVector(target:Object):Boolean {
+			return target is Vector.<int>
+				|| target is Vector.<uint>
+				|| target is Vector.<Number>
+				|| target is Vector.<*>
+		}
+		
 		//--- STATIC ----------------------------------------------------------
 
 		/** Defines default easing method to use when no ease is specified */
@@ -784,9 +790,8 @@ package aze.motion {
 	}
 
 }
-import aze.motion.EazeTween;
 
-import flash.utils.getQualifiedClassName;
+import aze.motion.EazeTween;
 /**
  * Tweened propertie infos (chained list)
  */
@@ -799,7 +804,7 @@ final class EazeProperty
 	public var delta:Number;
 	public var next:EazeProperty;
 	
-	function EazeProperty(target : *, name:String, end:Number, next:EazeProperty)
+	public function EazeProperty(target : *, name:String, end:Number, next:EazeProperty)
 	{
 		this.target = target;
 		this.name = name;
@@ -827,7 +832,6 @@ final class EazeProperty
 	}
 }
 
-
 /**
  * Information to honor tween completion: complete event, chaining.
  */
@@ -838,7 +842,7 @@ final class CompleteData
 	private var chain:Array;
 	private var diff:Number;
 	
-	function CompleteData(callback:Function, args:Array, chain:Array, diff:Number)
+	public function CompleteData(callback:Function, args:Array, chain:Array, diff:Number)
 	{
 		this.callback = callback;
 		this.args = args;
@@ -862,10 +866,4 @@ final class CompleteData
 			chain = null;
 		}
 	}
-}
-
-
-const VECTOR : String = "__AS3__.vec::Vector";
-function isVector(value : *) : Boolean {
-	return getQualifiedClassName(value).indexOf(VECTOR) == 0;
 }
