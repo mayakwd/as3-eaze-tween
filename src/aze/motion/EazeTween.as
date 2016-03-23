@@ -144,7 +144,8 @@ package aze.motion {
 			{
 				cpt++;
 				var isComplete:Boolean;
-				if (t.isDead) isComplete = true;
+				if (t.pauseTime != 0) isComplete = false;
+				else if (t.isDead) isComplete = true;
 				else
 				{
 					isComplete = time >= t.endTime;
@@ -267,6 +268,7 @@ package aze.motion {
 		private var _repeat:int;
 		private var startTime:Number;
 		private var endTime:Number;
+		private var pauseTime:Number;
 		private var properties:EazeProperty;
 		private var specials:EazeSpecial;
 		private var autoVisible:Boolean;
@@ -360,6 +362,8 @@ package aze.motion {
 			_duration = (isNaN(duration) ? smartDuration(String(duration)) : Number(duration)) *(useMilliseconds ? 1 : 1000);
 			endTime = startTime + _duration;
 			
+			pauseTime = 0;
+			
 			// set values
 			if (reversed || _duration == 0) update(startTime);
 			if (autoVisible && _duration > 0) 
@@ -374,6 +378,20 @@ package aze.motion {
 			}
 			_started = true;
 			attach(overwrite);
+		}
+		
+		public function pause():void
+		{
+			pauseTime = getTimer();
+		}
+		
+		public function resume():void
+		{
+			var delta:Number = getTimer() - pauseTime;
+			startTime += delta;
+			endTime += delta;
+			
+			pauseTime = 0;
 		}
 		
 		/// Read target properties
