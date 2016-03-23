@@ -8,18 +8,22 @@ language: objective-c
 env:
 - TERM=dumb
 before_script:
-- brew update > /dev/null
-- brew tap homebrew/binary
-- brew install ant pandoc > /dev/null
-- brew install caskroom/cask/brew-cask
-- brew cask install flash-player-debugger
+- sudo brew update > /dev/null
+- sudo brew tap homebrew/binary
+- sudo brew install ant pandoc > /dev/null
+- sudo brew install caskroom/cask/brew-cask
+- sudo brew cask install flash-player-debugger
 - export FLASHPLAYER_DEBUGGER="$HOME/Applications/Flash Player Debugger.app/Contents/MacOS/Flash Player Debugger"
 - export FLASH_PLAYER_EXE="$HOME/Applications/Flash Player Debugger.app/Contents/MacOS/Flash Player Debugger"
-- wget -O flex_sdk.zip http://mirrors.gigenet.com/apache/flex/4.14.1/binaries/apache-flex-sdk-4.14.1-bin.zip
+- wget -O flex_sdk.zip http://mirrors.gigenet.com/apache/flex/4.15.0/binaries/apache-flex-sdk-4.15.0-bin.zip
 - unzip -q flex_sdk.zip -d flex_sdk
 - echo env.PLAYERGLOBAL_HOME=libs/player > flex_sdk/env.properties
+- wget -O playerglobal.swc https://fpdownload.macromedia.com/get/flashplayer/updaters/21/playerglobal21_0.swc
+- mkdir -p flex_sdk/frameworks/libs/player/21.0/
+- mv playerglobal.swc flex_sdk/frameworks/libs/player/21.0/playerglobal.swc
+- wget -O playerglobal.swc https://fpdownload.macromedia.com/get/flashplayer/updaters/11/playerglobal11_1.swc
 - mkdir -p flex_sdk/frameworks/libs/player/11.1/
-- mkdir -p flex_sdk/frameworks/libs/player/19.0/
+- mv playerglobal.swc flex_sdk/frameworks/libs/player/11.1/playerglobal.swc
 - export FLEX_HOME="$TRAVIS_BUILD_DIR/flex_sdk"
 - chmod +x flex_sdk/bin/mxmlc
 script:
